@@ -46,7 +46,7 @@ const HomePage = () => {
             Empowering You with Reliable Savings & Loans
           </h1>
           <p className="lead mb-4">
-            Secure, Convenient, and Affordable Financial Services for Everyone
+            Secure , Convenient, and Affordable Financial Services for Everyone
           </p>
           <div className="col-lg-8 mx-auto">
             <p className="mb-5">
@@ -73,9 +73,9 @@ const HomePage = () => {
             <h2 className="text-2xl font-bold mb-2 font-sora">Why Choose Us</h2>
             <p className="text-gray-300 max-w-2xl mx-auto text-sm">
               Experience banking that puts your financial well-being first with
-              our industry-leading benefits.
+              our industry-leading benefits ..
             </p>
-          </div>
+          </div>  
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-gray-800 rounded-lg p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
@@ -83,7 +83,7 @@ const HomePage = () => {
                 <BiCheckShield className="text-yellow-400" size={60} />
               </div>
               <h3 className="text-lg font-semibold mt-4 mb-2 font-sora">
-                Bank-Grade Security
+                Bank-Grade Security 
               </h3>
               <p className="text-gray-300 text-sm">
                 Your assets are protected with military-grade encryption and
