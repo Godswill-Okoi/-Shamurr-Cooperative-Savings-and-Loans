@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   FaMapMarkerAlt,
   FaPhone,
@@ -56,95 +57,93 @@ const Footer = () => {
               foster economic growth.
             </p>
             <div className="flex space-x-4">
-              <a href="https://facebook.com" className="text-yellow-400 hover:text-yellow-300">
-                <FaFacebook size={20} />
-              </a>
-              <a href="https://twitter.com" className="text-yellow-400 hover:text-yellow-300">
-                <FaTwitter size={20} />
-              </a>
-              <a href="https://instagram.com" className="text-yellow-400 hover:text-yellow-300">
-                <FaInstagram size={20} />
-              </a>
-              <a href="https://linkedin.com" className="text-yellow-400 hover:text-yellow-300">
-                <FaLinkedin size={20} />
-              </a>
+              <Link to="https://facebook.com" className="text-yellow-400 hover:text-yellow-300">
+                <FaFacebook size={20} className="text-yellow-400" />
+              </Link>
+              <Link to="https://twitter.com" className="text-yellow-400 hover:text-yellow-300">
+                <FaTwitter size={20} className="text-yellow-400" />
+              </Link>
+              <Link to="https://instagram.com" className="text-yellow-400 hover:text-yellow-300">
+                <FaInstagram size={20} className="text-yellow-400" />
+              </Link>
+              <Link to="https://linkedin.com" className="text-yellow-400 hover:text-yellow-300">
+                <FaLinkedin size={20} className="text-yellow-400" />
+              </Link>
             </div>
           </div>
 
           {/* Quick Links Section */}
           <div>
+            
+            <ul className="space-y-2">
             <h5 className="text-xl font-semibold mb-4 text-yellow-400">
               Quick Links
             </h5>
-            <ul className="space-y-2">
               <li>
-                <a href="/about" className="text-gray-300 hover:text-white">
+                <Link to="/about" className="text-gray-300 hover:text-white" style={{ color: "white" }}>
                   About Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/services" className="text-gray-300 hover:text-white">
+                <Link to="/services" className="text-gray-300 hover:text-white" style={{ color: "white" }}>
                   Services
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/how-it-works" className="text-gray-300 hover:text-white">
-                  How It Works
-                </a>
-              </li>
-              <li>
-                <a href="/faqs" className="text-gray-300 hover:text-white">
+                <Link to="/faqs" className="text-gray-300 hover:text-white" style={{ color: "white" }}>
                   FAQs
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/contact" className="text-gray-300 hover:text-white">
+                <Link to="/contact" className="text-gray-300 hover:text-white" style={{ color: "white" }}>
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
 
           {/* Services Section */}
           <div>
+            
+            <ul className="space-y-2">
             <h5 className="text-xl font-semibold mb-4 text-yellow-400">
               Services
             </h5>
-            <ul className="space-y-2">
               <li>
-                <a href="/personal-loans" className="text-gray-300 hover:text-white">
+                <Link to="/personal-loans" className="text-gray-300 hover:text-white" style={{ color: "white" }}>
                   Personal Loans
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/business-loans" className="text-gray-300 hover:text-white">
+                <Link to="/business-loans" className="text-gray-300 hover:text-white" style={{ color: "white" }}>
                   Business Loans
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/savings-plans" className="text-gray-300 hover:text-white">
+                <Link to="/savings-plans" className="text-gray-300 hover:text-white" style={{ color: "white" }}>
                   Savings Plans
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/financial-advisory" className="text-gray-300 hover:text-white">
+                <Link to="/financial-advisory" className="text-gray-300 hover:text-white" style={{ color: "white" }}>
                   Financial Advisory
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/community-programs" className="text-gray-300 hover:text-white">
+                <Link to="/community-programs" className="text-gray-300 hover:text-white" style={{ color: "white" }}>
                   Community Programs
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
 
           {/* Contact Info Section */}
           <div>
+            
+            <ul className="space-y-4">
             <h5 className="text-xl font-semibold mb-4 text-yellow-400">
               Contact Info
             </h5>
-            <ul className="space-y-4">
               <li className="flex items-start">
                 <FaMapMarkerAlt className="text-yellow-400 mt-1 mr-3" />
                 <span className="text-gray-300">123 Financial District, Lagos</span>
@@ -167,12 +166,12 @@ const Footer = () => {
               &copy; {currentYear} Shamurr Cooperative. All rights reserved.
             </p>
             <div className="flex space-x-6">
-              <a href="/privacy-policy" className="text-gray-300 hover:text-white">
+              <Link to="/privacy-policy" className="text-gray-300 hover:text-white" style={{ color: "white" }}>
                 Privacy Policy
-              </a>
-              <a href="/terms-of-service" className="text-gray-300 hover:text-white">
+              </Link>
+              <Link to="/terms-of-service" className="text-gray-300 hover:text-white" style={{ color: "white" }}>
                 Terms of Service
-              </a>
+              </Link>
             </div>
           </div>
         </div>

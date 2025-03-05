@@ -35,18 +35,16 @@ const Navbar = () => {
                 alt="Shamurr Logo"
                 className="h-14 w-auto transition-transform duration-300 group-hover:scale-105"
               />
-              <span className="hidden md:inline-block ml-3 text-xl font-bold bg-gradient-to-r from-yellow-300 to-yellow-500 bg-clip-text text-transparent">
-                Shamurr Cooperative
-              </span>
+
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex gap-x-4 items-center space-x-1 decoration-none">
+          <div className="hidden lg:flex gap-x-2 items-center space-x-1 decoration-none">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/about">About</NavLink>
             <NavLink to="/services">Services</NavLink>
-            <NavLink to="/how-it-works">How It Works</NavLink>
+            <NavLink to="/faq">FAQ</NavLink>
             <NavLink to="/testimonials">Testimonials</NavLink>
             <NavLink to="/contact">Contact</NavLink>
             <div className="ml-6">
@@ -55,6 +53,12 @@ const Navbar = () => {
                 className="px-6 py-2.5 rounded-md bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-medium text-sm uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:shadow-yellow-500/20 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-black"
               >
                 Apply Now
+              </Link>
+              <Link
+                to="/become-a-member"
+                className="ms-2 px-6 py-2.5 rounded-md outline-1 outline-amber-50 text-white font-medium text-sm uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:shadow-yellow-500/20 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 focus:ring-offset-black"
+              >
+                Become a Member
               </Link>
             </div>
           </div>
@@ -91,7 +95,7 @@ const Navbar = () => {
           <MobileNavLink to="/">Home</MobileNavLink>
           <MobileNavLink to="/about">About</MobileNavLink>
           <MobileNavLink to="/services">Services</MobileNavLink>
-          <MobileNavLink to="/how-it-works">How It Works</MobileNavLink>
+          <MobileNavLink to="/faq">FAQ</MobileNavLink>
           <MobileNavLink to="/testimonials">Testimonials</MobileNavLink>
           <MobileNavLink to="/contact">Contact</MobileNavLink>
           <div className="pt-2 pb-3">
@@ -111,11 +115,15 @@ const Navbar = () => {
 const NavLink = ({ to, children, isActive }) => (
   <Link
     to={to}
-    className={`relative text-sm font-medium uppercase tracking-wider transition-colors duration-300 no-underline text-center font-poppins ${
-      isActive ? 'text-white' : 'text-white hover:text-yellow-400'
-    }`}
+    className="group relative text-sm font-medium uppercase tracking-wider text-white hover:text-white"
   >
-    {children}
+    <span className="relative z-10 px-2 py-1">
+      {children}
+    </span>
+    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-yellow-400 to-transparent origin-center scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out"></span>
+    <div className="absolute inset-0 overflow-hidden rounded-md opacity-0 group-hover:opacity-20 transition-opacity duration-300">
+      <div className="absolute -inset-px bg-gradient-to-r from-yellow-300 to-yellow-500 opacity-50 blur-lg transform -rotate-45 animate-pulse"></div>
+    </div>
   </Link>
 );
 

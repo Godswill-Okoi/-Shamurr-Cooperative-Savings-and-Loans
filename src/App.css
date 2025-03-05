@@ -12,6 +12,11 @@
   text-decoration: none;
 }
 
+a {
+  text-decoration: none;
+  color: white;
+}
+
 /* General Layout */
 .home-page {
   width: 100%;

@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ContactSection from "../components/ContactSection";
-import FAQ from "../components/FAQ";
+import FAQ from "../components/FAQSection";
 import { Link } from "react-router-dom";
 
 import {
@@ -40,12 +40,18 @@ const HomePage = () => {
       >
         <div className="container py-5 text-center">
           <h1
-            className="display-4 fw-bold mb-3"
+            className="display-3 fw-bold mb-3"
             style={{ color: "#FFD700", fontFamily: "Sora" }}
           >
-            Empowering You with Reliable Savings & Loans
+            Shamurr Cooperative <br /> Savings and Loans
           </h1>
-          <p className="lead mb-4">
+          {/* <h1
+            className="display-7 fw-bold mb-3"
+            style={{ color: "#fff", fontFamily: "Sora" }}
+          >
+            Empowering You with Reliable Savings & Loans
+          </h1> */}
+          <p className="text-2xl mb-4">
             Secure , Convenient, and Affordable Financial Services for Everyone
           </p>
           <div className="col-lg-8 mx-auto">
@@ -75,7 +81,7 @@ const HomePage = () => {
               Experience banking that puts your financial well-being first with
               our industry-leading benefits ..
             </p>
-          </div>  
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="bg-gray-800 rounded-lg p-6 transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
@@ -83,7 +89,7 @@ const HomePage = () => {
                 <BiCheckShield className="text-yellow-400" size={60} />
               </div>
               <h3 className="text-lg font-semibold mt-4 mb-2 font-sora">
-                Bank-Grade Security 
+                Bank-Grade Security
               </h3>
               <p className="text-gray-300 text-sm">
                 Your assets are protected with military-grade encryption and
@@ -175,7 +181,8 @@ const HomePage = () => {
                   </ul>
                   <a
                     href="/loans"
-                    className="w-full py-2 px-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded transition-colors duration-300 inline-flex items-center justify-center"
+                    className="w-full py-2 px-4 bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-bold rounded transition-colors duration-300 inline-flex items-center justify-center"
+                    style={{color: "white"}}
                   >
                     View Loan Options
                     <svg
@@ -222,8 +229,9 @@ const HomePage = () => {
                     ))}
                   </ul>
                   <a
-                    href="/savings"
-                    className="w-full py-2 px-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded transition-colors duration-300 inline-flex items-center justify-center"
+                    href="/loans"
+                    className="w-full py-2 px-4 bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-bold rounded transition-colors duration-300 inline-flex items-center justify-center"
+                    style={{color: "white"}}
                   >
                     Explore Savings Plans
                     <svg
@@ -270,8 +278,9 @@ const HomePage = () => {
                     ))}
                   </ul>
                   <a
-                    href="/services"
-                    className="w-full py-2 px-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold rounded transition-colors duration-300 inline-flex items-center justify-center"
+                    href="/loans"
+                    className="w-full py-2 px-4 bg-yellow-600 hover:bg-yellow-700 text-gray-900 font-bold rounded transition-colors duration-300 inline-flex items-center justify-center"
+                    style={{color: "white"}}
                   >
                     Learn More
                     <svg
@@ -403,7 +412,7 @@ const HomePage = () => {
                     <div className="hidden md:block absolute top-1/2 right-full w-full h-0.5 bg-yellow-500 transform -translate-y-1/2 z-0"></div>
                   </div>
                   <h3 className="text-xl font-semibold mb-2 text-white">
-                    Funding
+                    Disborstment
                   </h3>
                   <p className="text-gray-400 text-center">
                     Receive funds directly to your account within 48 hours
@@ -432,41 +441,23 @@ const HomePage = () => {
             <div className="w-full lg:w-1/2">
               <div className="relative">
                 <img
-                  src="/images/hero-bg.jpg"
+                  src="/images/1488143f308b55eacbdec9dd22e388de.jpg"
                   alt="About Shamurr"
                   className="w-full h-auto rounded-lg shadow-xl object-cover"
                 />
-                {/* Decorative elements */}
-                <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-yellow-400 rounded-lg -z-10 hidden md:block animate-pulse"></div>
-                <div className="absolute -top-4 -right-4 w-16 h-16 bg-yellow-300 rounded-full -z-10 hidden md:block animate-bounce opacity-75"></div>
-                <div className="absolute top-1/2 -right-8 w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-lg -z-10 hidden md:block transform rotate-45 animate-float"></div>
-                <style jsx>{`
-                  @keyframes float {
-                    0%,
-                    100% {
-                      transform: translateY(0) rotate(45deg);
-                    }
-                    50% {
-                      transform: translateY(-10px) rotate(45deg);
-                    }
-                  }
-                  .animate-float {
-                    animation: float 3s ease-in-out infinite;
-                  }
-                `}</style>
               </div>
             </div>
 
             {/* Content Column - Text left-aligned on desktop, center on mobile */}
-            <div className="w-full lg:w-1/2 text-center lg:text-left">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 text-yellow-500">
+            <div className="w-full lg:w-1/2 lg:text-left">
+              {/* <h2 className="text-3xl md:text-4xl font-extrabold mb-6 text-sora text-black">
                 About Shamurr
-              </h2>
+              </h2> */}
 
               <div className="space-y-8">
                 {/* Mission */}
                 <div>
-                  <h4 className="text-xl font-semibold mb-2 text-gray-800">
+                  <h4 className="text-xl font-semibold mb-2 text-black">
                     Our Mission
                   </h4>
                   <p className="text-gray-600">
@@ -479,7 +470,7 @@ const HomePage = () => {
 
                 {/* Vision */}
                 <div>
-                  <h4 className="text-xl font-semibold mb-2 text-gray-800">
+                  <h4 className="text-xl font-semibold mb-2 text-black">
                     Our Vision
                   </h4>
                   <p className="text-gray-600">
@@ -492,7 +483,7 @@ const HomePage = () => {
 
                 {/* Values */}
                 <div>
-                  <h4 className="text-xl font-semibold mb-4 text-gray-800">
+                  <h4 className="text-xl font-semibold mb-4 text-black">
                     Our Values
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -613,20 +604,20 @@ const HomePage = () => {
       </section>
 
       {/* Our Impact Section */}
-      <section className="py-20 bg-black">
+      {/* <section className="py-20 bg-black">
         <div className="max-w-7xl mx-auto px-4">
           {/* Header */}
-          <div className="text-center mb-12">
+          {/* <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-3 text-yellow-400">
               Our Impact
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
               How Shamurr is making a difference in our communities
             </p>
-          </div>
+          </div> */}
 
           {/* Impact Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div className="p-6">
               <h2 className="text-5xl font-extrabold text-yellow-400">
                 5,000+
@@ -648,7 +639,7 @@ const HomePage = () => {
           </div>
 
           {/* Featured Community Project */}
-          <div className="mt-16">
+          {/* <div className="mt-16">
             <div className="max-w-3xl mx-auto bg-gray-800 border border-yellow-500/20 p-6 rounded-lg shadow-lg">
               <h4 className="text-2xl font-bold text-yellow-400 mb-4">
                 Featured Community Project
@@ -680,15 +671,16 @@ const HomePage = () => {
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </div> */}
+      {/* </section>  */}
 
       {/* Testimonials Section */}
       <section id="testimonials" className="py-16 bg-black">
         <div className="max-w-7xl mx-auto px-4">
           {/* Section Header */}
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-yellow-400 mb-4">
+            <h2 className="text-[2rem] font-bold text-yellow-400 m"
+            style={{fontFamily: "sora"}}>
               What Our Members Say
             </h2>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
@@ -793,18 +785,17 @@ const HomePage = () => {
 
           {/* Read More Button */}
           <div className="text-center mt-12">
-            <a
-              href="/testimonials"
+            <Link
+              to="/testimonials"
               className="inline-block px-6 py-3 border border-yellow-400 text-yellow-400 rounded-full text-sm font-semibold uppercase tracking-wide hover:bg-yellow-400 hover:text-black transition-colors duration-300"
+              style={{ color: 'white' }}
             >
               Read More Success Stories
-            </a>
+            </Link>
           </div>
         </div>
       </section>
-
       <FAQ />
-
       <ContactSection />
 
       {/* CTA Section */}

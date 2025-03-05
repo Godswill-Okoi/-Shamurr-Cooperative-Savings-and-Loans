@@ -150,7 +150,9 @@ const ContactSection = () => {
     
     try {
       // Update the API endpoint to point to your backend server
-      const response = await axios.post('http://localhost:5000/api//send-contact-email', formData);
+      const response = await axios.post('http://localhost:5000/api/send-contact-email', formData);
+      
+      console.log(response.data);
       
       setSubmitStatus({
         success: true,
@@ -167,6 +169,8 @@ const ContactSection = () => {
       setTouched({});
       
     } catch (error) {
+      console.error('Error sending contact email:', error);
+      
       setSubmitStatus({
         success: false,
         message: 'Something went wrong. Please try again later.'
@@ -363,7 +367,7 @@ const ContactSection = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Name Field */}
                   <div className="space-y-2">
-                    <label htmlFor="name" className="flex text-gray-300 text-sm font-medium items-center">
+                    <label htmlFor="name" className="flex flex-col text-gray-300 text-sm font-medium items-center">
                       <FaUser className="mr-2 text-yellow-400" size={14} />
                       Full Name <span className="text-red-500 ml-1">*</span>
                     </label>

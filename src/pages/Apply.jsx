@@ -2,110 +2,115 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileDownload, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 
-const API_URL = 'http://localhost:5000/api/send-application'; // Update to the new endpoint
+const API_URL = "http://localhost:5000/api/send-application";
 
 const Apply = () => {
-  const [formType, setFormType] = useState("loan"); // Default to 'loan'
   const [formState, setFormState] = useState({
-    // Shared fields
+    // Borrower Information
     name: "",
-    email: "",
+    address: "",
     phone: "",
-    referralSource: "",
-    terms: false,
-    privacy: false,
+    gender: "",
+    email: "",
+    dateOfBirth: "",
+    maritalStatus: "",
+    numberOfDependants: "",
 
-    // Membership specific fields
-    reason: "",
-    membershipType: "individual",
+    // Business Information (for SME)
+    businessName: "",
+    businessAddress: "",
+    businessType: "",
+    businessSector: "",
+    yearsInOperation: "",
+    annualRevenue: "",
+    numberOfEmployees: "",
 
-    // Loan specific fields
+    // Loan Information
     loanAmount: "",
     loanPurpose: "",
-    employmentStatus: "employed",
-    monthlyIncome: "",
-    existingDebts: "",
-    creditScore: "good",
+    repaymentTerm: "",
+    repaymentTermType: "",
+    interestRate: "",
+    processingFees: "",
+    collateral: "",
 
-    formStep: 1,
+    // Financial Information
+    bankName: "",
+    accountNumber: "",
+    bvn: "",
+    nin: "",
+
+    // Credit History
+    hasDefaultedLoan: false,
+    hasFiledBankruptcy: false,
+    hasOutstandingLoans: false,
+
+    // References
+    personalReferenceName: "",
+    personalReferencePhone: "",
+    businessReferenceName: "",
+    businessReferencePhone: "",
+
+    // Authorization
+    termsAgreement: false,
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-
-  // Add these new states for file handling
   const [files, setFiles] = useState({
     identification: null,
-    proofOfIncome: null,
-    bankStatements: null,
-    additionalDocs: null,
+    bankStatement: null,
+    proofOfBusinessOwnership: null,
   });
 
-  const [fileErrors, setFileErrors] = useState({});
-
-  const handleFileChange = (e, fileType) => {
-    const selectedFile = e.target.files[0];
-
-    // Validate file size (5MB limit)
-    if (selectedFile && selectedFile.size > 5 * 1024 * 1024) {
-      setFileErrors((prev) => ({
-        ...prev,
-        [fileType]: "File size must be less than 5MB",
-      }));
-      return;
-    }
-
-    setFiles((prev) => ({
-      ...prev,
-      [fileType]: selectedFile,
-    }));
-
-    // Clear error if exists
-    if (fileErrors[fileType]) {
-      setFileErrors((prev) => ({
-        ...prev,
-        [fileType]: null,
-      }));
-    }
-  };
+  const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormState({
-      ...formState,
+    setFormState((prevState) => ({
+      ...prevState,
       [name]: type === "checkbox" ? checked : value,
-    });
+    }));
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const formData = new FormData();
+  const handleFileChange = (e, fileType) => {
+    const file = e.target.files[0];
+    setFiles((prevFiles) => ({
+      ...prevFiles,
+      [fileType]: file,
+    }));
+  };
 
-    // Append form fields
-    formData.append('name', formState.name);
-    formData.append('email', formState.email);
-    formData.append('phone', formState.phone);
-    formData.append('loanAmount', formState.loanAmount);
-    formData.append('loanPurpose', formState.loanPurpose);
-    formData.append('employmentStatus', formState.employmentStatus);
-    formData.append('monthlyIncome', formState.monthlyIncome);
-    formData.append('existingDebts', formState.existingDebts);
-    formData.append('creditScore', formState.creditScore);
-    formData.append('terms', formState.terms);
-    formData.append('privacy', formState.privacy);
-
-    // Append files
-    for (const [key, file] of Object.entries(files)) {
-      if (file) {
-        formData.append(key, file); // Use the key to append the file
-      }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formState.termsAgreement) {
+      alert("You must agree to the terms and conditions before submitting.");
+      return;
     }
 
-    // Send the request
+    const formData = new FormData();
+
+    // Append all form fields
+    Object.entries(formState).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    // Append files
+    Object.entries(files).forEach(([key, file]) => {
+      if (file) {
+        formData.append(key, file);
+      }
+    });
+
+    setLoading(true);
+
     try {
       const response = await fetch(API_URL, {
-        method: 'POST',
+        method: "POST",
         body: formData,
       });
 
@@ -115,574 +120,152 @@ const Apply = () => {
 
       const result = await response.json();
       console.log(result);
-      setSubmitSuccess(true);
+      setModalVisible(true);
+
+      // Reset form state
+      setFormState({
+        name: "",
+        address: "",
+        phone: "",
+        gender: "",
+        email: "",
+        dateOfBirth: "",
+        maritalStatus: "",
+        numberOfDependants: "",
+        businessName: "",
+        businessAddress: "",
+        businessType: "",
+        businessSector: "",
+        yearsInOperation: "",
+        annualRevenue: "",
+        numberOfEmployees: "",
+        loanAmount: "",
+        loanPurpose: "",
+        repaymentTerm: "",
+        repaymentTermType: "",
+        interestRate: "",
+        processingFees: "",
+        collateral: "",
+        bankName: "",
+        accountNumber: "",
+        bvn: "",
+        nin: "",
+        personalReferenceName: "",
+        personalReferencePhone: "",
+        businessReferenceName: "",
+        businessReferencePhone: "",
+        termsAgreement: false,
+      });
+      setFiles({
+        identification: null,
+        bankStatement: null,
+        proofOfBusinessOwnership: null,
+      });
     } catch (error) {
-      console.error('Error during form submission:', error);
+      console.error("Error during form submission:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const nextStep = () => {
-    setFormState({ ...formState, formStep: formState.formStep + 1 });
+  const handleReturnHome = () => {
+    navigate("/");
   };
 
-  const prevStep = () => {
-    setFormState({ ...formState, formStep: formState.formStep - 1 });
+  const handleContactUs = () => {
+    navigate("/contact");
   };
 
-  const switchFormType = (type) => {
-    setFormType(type);
-    setFormState({ ...formState, formStep: 1 });
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setFormState({
+      name: "",
+      address: "",
+      phone: "",
+      gender: "",
+      email: "",
+      dateOfBirth: "",
+      maritalStatus: "",
+      numberOfDependants: "",
+      businessName: "",
+      businessAddress: "",
+      businessType: "",
+      businessSector: "",
+      yearsInOperation: "",
+      annualRevenue: "",
+      numberOfEmployees: "",
+      loanAmount: "",
+      loanPurpose: "",
+      repaymentTerm: "",
+      repaymentTermType: "",
+      interestRate: "",
+      processingFees: "",
+      collateral: "",
+      bankName: "",
+      accountNumber: "",
+      bvn: "",
+      nin: "",
+      personalReferenceName: "",
+      personalReferencePhone: "",
+      businessReferenceName: "",
+      businessReferencePhone: "",
+      termsAgreement: false,
+    });
+    setFiles({
+      identification: null,
+      bankStatement: null,
+      proofOfBusinessOwnership: null,
+    });
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        when: "beforeChildren",
-        staggerChildren: 0.1,
-      },
-    },
-  };
+  const handleDownload = () => {
+    const formattedData = `
+      Name: ${formState.name}
+      Address: ${formState.address}
+      Phone: ${formState.phone}
+      Gender: ${formState.gender}
+      Email: ${formState.email}
+      Date of Birth: ${formState.dateOfBirth}
+      Marital Status: ${formState.maritalStatus}
+      Number of Dependants: ${formState.numberOfDependants}
+      Business Name: ${formState.businessName}
+      Business Address: ${formState.businessAddress}
+      Business Type: ${formState.businessType}
+      Business Sector: ${formState.businessSector}
+      Years in Operation: ${formState.yearsInOperation}
+      Annual Revenue: ${formState.annualRevenue}
+      Number of Employees: ${formState.numberOfEmployees}
+      Loan Amount: ${formState.loanAmount}
+      Loan Purpose: ${formState.loanPurpose}
+      Repayment Term: ${formState.repaymentTerm} ${formState.repaymentTermType}
+      Interest Rate: ${formState.interestRate}
+      Processing Fees: ${formState.processingFees}
+      Collateral: ${formState.collateral}
+      Bank Name: ${formState.bankName}
+      Account Number: ${formState.accountNumber}
+      BVN: ${formState.bvn}
+      NIN: ${formState.nin}
+      Personal Reference Name: ${formState.personalReferenceName}
+      Personal Reference Phone: ${formState.personalReferencePhone}
+      Business Reference Name: ${formState.businessReferenceName}
+      Business Reference Phone: ${formState.businessReferencePhone}
+      Terms Agreement: ${formState.termsAgreement ? "Agreed" : "Not Agreed"}
+    `;
 
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  };
-
-  const renderProgressBar = () => {
-    const totalSteps = 3; // Only 3 steps for loan application
-
-    return (
-      <div className="w-full mb-8">
-        <div className="relative">
-          <div className="overflow-hidden h-2 mb-4 flex rounded bg-gray-800">
-            <div
-              className="bg-gradient-to-r from-yellow-400 to-yellow-500 transition-all duration-500 ease-in-out"
-              style={{ width: `${(formState.formStep / totalSteps) * 100}%` }}
-            ></div>
-          </div>
-          <div className="flex justify-between">
-            <div
-              className={`text-xs font-medium ${
-                formState.formStep >= 1 ? "text-yellow-400" : "text-gray-500"
-              }`}
-            >
-              Basic Info
-            </div>
-            <div
-              className={`text-xs font-medium ${
-                formState.formStep >= 2 ? "text-yellow-400" : "text-gray-500"
-              }`}
-            >
-              Loan Details
-            </div>
-            <div
-              className={`text-xs font-medium ${
-                formState.formStep >= 3 ? "text-yellow-400" : "text-gray-500"
-              }`}
-            >
-              Financial Info
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const renderFormTypeSelector = () => (
-    <div className="flex space-x-4 mb-8">
-      <button
-        type="button"
-        onClick={() => switchFormType("loan")}
-        className={`flex-1 py-3 px-4 rounded-md font-medium text-sm transition-all duration-300 ${
-          formType === "loan"
-            ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-black"
-            : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-        }`}
-      >
-        Loan Application
-      </button>
-    </div>
-  );
-
-  const renderForm = () => {
-    if (submitSuccess) {
-      return (
-        <motion.div
-          className="text-center py-12"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-yellow-500 mb-6">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-8 w-8 text-black"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={3}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-yellow-300 to-yellow-500 bg-clip-text text-transparent">
-            {formType === "membership"
-              ? "Membership Application Submitted!"
-              : "Loan Application Submitted!"}
-          </h2>
-          <p className="text-gray-300 mb-6">
-            {formType === "membership"
-              ? "Thank you for applying to join Shamurr Cooperative. We've received your application and will contact you within 2-3 business days."
-              : "Thank you for your loan application. Our financial team will review your information and contact you within 2 business days regarding the next steps."}
-          </p>
-          <button
-            className="px-6 py-2 rounded-md bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-medium transition-all duration-300 hover:shadow-lg"
-            onClick={() => (window.location.href = "/")}
-          >
-            Return to Home
-          </button>
-        </motion.div>
-      );
-    }
-
-    return (
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Basic Info Step - Same for both membership and loan applications */}
-        {formState.formStep === 1 && (
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="space-y-6"
-          >
-            <motion.div variants={itemVariants}>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-300"
-              >
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formState.name}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                required
-              />
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-300"
-              >
-                Email Address
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formState.email}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                required
-              />
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <label
-                htmlFor="phone"
-                className="block text-sm font-medium text-gray-300"
-              >
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={formState.phone}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                required
-              />
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <label
-                htmlFor="referralSource"
-                className="block text-sm font-medium text-gray-300"
-              >
-                How did you hear about us?
-              </label>
-              <input
-                type="text"
-                id="referralSource"
-                name="referralSource"
-                value={formState.referralSource}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-              />
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="pt-4">
-              <button
-                type="button"
-                onClick={nextStep}
-                className="w-full px-8 py-3 rounded-md bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-medium text-sm uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:shadow-yellow-500/20 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              >
-                Continue
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-
-        {/* Loan Form - Step 2 */}
-        {formType === "loan" && formState.formStep === 2 && (
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="space-y-6"
-          >
-            <motion.div variants={itemVariants}>
-              <label
-                htmlFor="loanAmount"
-                className="block text-sm font-medium text-gray-300"
-              >
-                Loan Amount ($)
-              </label>
-              <input
-                type="number"
-                id="loanAmount"
-                name="loanAmount"
-                value={formState.loanAmount}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                required
-                min="1"
-              />
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <label
-                htmlFor="loanPurpose"
-                className="block text-sm font-medium text-gray-300"
-              >
-                Loan Purpose
-              </label>
-              <select
-                id="loanPurpose"
-                name="loanPurpose"
-                value={formState.loanPurpose}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                required
-              >
-                <option value="">Select purpose</option>
-                <option value="business">Business Development</option>
-                <option value="education">Education</option>
-                <option value="home">Home Improvement</option>
-                <option value="personal">Personal Use</option>
-                <option value="debt">Debt Consolidation</option>
-                <option value="other">Other</option>
-              </select>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="pt-4 flex space-x-4">
-              <button
-                type="button"
-                onClick={prevStep}
-                className="w-1/3 px-8 py-3 rounded-md bg-transparent border border-gray-700 text-gray-300 font-medium text-sm uppercase tracking-wider transition-all duration-300 hover:border-yellow-500 hover:text-yellow-500"
-              >
-                Back
-              </button>
-
-              <button
-                type="button"
-                onClick={nextStep}
-                className="w-2/3 px-8 py-3 rounded-md bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-medium text-sm uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:shadow-yellow-500/20 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              >
-                Continue
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-
-        {/* Loan Form - Step 3 */}
-        {formType === "loan" && formState.formStep === 3 && (
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="space-y-6"
-          >
-            <motion.div variants={itemVariants}>
-              <label
-                htmlFor="employmentStatus"
-                className="block text-sm font-medium text-gray-300"
-              >
-                Employment Status
-              </label>
-              <select
-                id="employmentStatus"
-                name="employmentStatus"
-                value={formState.employmentStatus}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                required
-              >
-                <option value="employed">Employed Full-Time</option>
-                <option value="part-time">Employed Part-Time</option>
-                <option value="self-employed">Self-Employed</option>
-                <option value="unemployed">Unemployed</option>
-                <option value="retired">Retired</option>
-                <option value="student">Student</option>
-              </select>
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <label
-                htmlFor="monthlyIncome"
-                className="block text-sm font-medium text-gray-300"
-              >
-                Monthly Income ($)
-              </label>
-              <input
-                type="number"
-                id="monthlyIncome"
-                name="monthlyIncome"
-                value={formState.monthlyIncome}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                required
-                min="0"
-              />
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <label
-                htmlFor="existingDebts"
-                className="block text-sm font-medium text-gray-300"
-              >
-                Existing Debts ($)
-              </label>
-              <input
-                type="number"
-                id="existingDebts"
-                name="existingDebts"
-                value={formState.existingDebts}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                required
-                min="0"
-              />
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <label
-                htmlFor="creditScore"
-                className="block text-sm font-medium text-gray-300"
-              >
-                Credit Score Range
-              </label>
-              <select
-                id="creditScore"
-                name="creditScore"
-                value={formState.creditScore}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                required
-              >
-                <option value="excellent">Excellent (750+)</option>
-                <option value="good">Good (700-749)</option>
-                <option value="fair">Fair (650-699)</option>
-                <option value="poor">Poor (600-649)</option>
-                <option value="bad">Bad (below 600)</option>
-                <option value="unknown">I don't know</option>
-              </select>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="space-y-4">
-              <div className="flex items-center">
-                <input
-                  id="terms"
-                  name="terms"
-                  type="checkbox"
-                  checked={formState.terms}
-                  onChange={handleChange}
-                  className="h-4 w-4 rounded border-gray-700 text-yellow-500 focus:ring-yellow-500"
-                  required
-                />
-                <label
-                  htmlFor="terms"
-                  className="ml-2 block text-sm text-gray-300"
-                >
-                  I agree to the{" "}
-                  <a href="#" className="text-yellow-400 hover:underline">
-                    terms and conditions
-                  </a>
-                </label>
-              </div>
-
-              <div className="flex items-center">
-                <input
-                  id="privacy"
-                  name="privacy"
-                  type="checkbox"
-                  checked={formState.privacy}
-                  onChange={handleChange}
-                  className="h-4 w-4 rounded border-gray-700 text-yellow-500 focus:ring-yellow-500"
-                  required
-                />
-                <label
-                  htmlFor="privacy"
-                  className="ml-2 block text-sm text-gray-300"
-                >
-                  I agree to the{" "}
-                  <a href="#" className="text-yellow-400 hover:underline">
-                    privacy policy
-                  </a>{" "}
-                  and authorize Shamurr Cooperative to perform a credit check
-                </label>
-              </div>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-300">
-                  Identification Document (ID/Passport){" "}
-                  <span className="text-yellow-400">*</span>
-                </label>
-                <input
-                  type="file"
-                  onChange={(e) => handleFileChange(e, "identification")}
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                  required
-                />
-                {fileErrors.identification && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {fileErrors.identification}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300">
-                  Proof of Income <span className="text-yellow-400">*</span>
-                </label>
-                <input
-                  type="file"
-                  onChange={(e) => handleFileChange(e, "proofOfIncome")}
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                  required
-                />
-                {fileErrors.proofOfIncome && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {fileErrors.proofOfIncome}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300">
-                  Bank Statements (Last 3 months){" "}
-                  <span className="text-yellow-400">*</span>
-                </label>
-                <input
-                  type="file"
-                  onChange={(e) => handleFileChange(e, "bankStatements")}
-                  accept=".pdf"
-                  className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                  required
-                />
-                {fileErrors.bankStatements && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {fileErrors.bankStatements}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-300">
-                  Additional Supporting Documents
-                </label>
-                <input
-                  type="file"
-                  onChange={(e) => handleFileChange(e, "additionalDocs")}
-                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
-                  className="mt-1 block w-full rounded-md bg-gray-800 border border-gray-700 text-white shadow-sm focus:border-yellow-500 focus:ring-yellow-500 px-4 py-3"
-                />
-                {fileErrors.additionalDocs && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {fileErrors.additionalDocs}
-                  </p>
-                )}
-                <p className="text-sm text-gray-400 mt-1">
-                  Optional: Any additional documents that support your
-                  application
-                </p>
-              </div>
-            </motion.div>
-
-            <motion.div variants={itemVariants} className="pt-4 flex space-x-4">
-              <button
-                type="button"
-                onClick={prevStep}
-                className="w-1/3 px-8 py-3 rounded-md bg-transparent border border-gray-700 text-gray-300 font-medium text-sm uppercase tracking-wider transition-all duration-300 hover:border-yellow-500 hover:text-yellow-500"
-              >
-                Back
-              </button>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-2/3 px-8 py-3 rounded-md bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-medium text-sm uppercase tracking-wider transition-all duration-300 hover:shadow-lg hover:shadow-yellow-500/20 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-yellow-500 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex justify-center items-center"
-              >
-                {isSubmitting ? (
-                  <svg
-                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-black"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                ) : null}
-                {isSubmitting ? "Submitting..." : "Submit Application"}
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </form>
-    );
+    const blob = new Blob([formattedData], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "application_details.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
     <>
       <Navbar />
-
       <div className="min-h-screen bg-black text-white pt-20 font-poppins">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <motion.div
@@ -692,185 +275,428 @@ const Apply = () => {
             className="text-center mb-12"
           >
             <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-yellow-300 to-yellow-500 bg-clip-text text-transparent">
-              {formType === "membership"
-                ? "Join Shamurr Cooperative"
-                : "Apply for a Loan"}
+              Loan Application
             </h1>
             <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-              {formType === "membership"
-                ? "Become a member of our community and enjoy exclusive benefits, networking opportunities, and financial services tailored to your needs."
-                : "Access affordable financing options designed to support your personal and business growth needs with competitive rates and flexible terms."}
+              Complete the form below to apply for a loan with Shamurr
+              Cooperative Savings and Loans
             </p>
           </motion.div>
 
           <div className="max-w-3xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="bg-gray-900 rounded-lg p-8 shadow-xl border border-gray-800"
+            <form
+              onSubmit={handleSubmit}
+              className="bg-gray-900 rounded-lg p-8 space-y-6"
             >
-              {!submitSuccess && renderFormTypeSelector()}
-              {!submitSuccess && renderProgressBar()}
-              {renderForm()}
-            </motion.div>
+              {/* Borrower Information Section */}
+              <div className="space-y-4">
+                <h2 className="text-2xl font-semibold text-yellow-400 mb-4">
+                  1. Borrower Information
+                </h2>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="name"
+                    value={formState.name}
+                    onChange={handleChange}
+                    placeholder="Full Name"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    required
+                  />
+                  <input
+                    type="text"
+                    name="address"
+                    value={formState.address}
+                    onChange={handleChange}
+                    placeholder="Address"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    required
+                  />
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formState.phone}
+                    onChange={handleChange}
+                    placeholder="Phone Number"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    required
+                  />
+                  <select
+                    name="gender"
+                    value={formState.gender}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    required
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formState.email}
+                    onChange={handleChange}
+                    placeholder="Email Address"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    required
+                  />
+                  <input
+                    type="date"
+                    name="dateOfBirth"
+                    value={formState.dateOfBirth}
+                    onChange={handleChange}
+                    placeholder="Date of Birth"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    required
+                  />
+                  <select
+                    name="maritalStatus"
+                    value={formState.maritalStatus}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    required
+                  >
+                    <option value="">Marital Status</option>
+                    <option value="single">Single</option>
+                    <option value="married">Married</option>
+                  </select>
+                  <input
+                    type="number"
+                    name="numberOfDependants"
+                    value={formState.numberOfDependants}
+                    onChange={handleChange}
+                    placeholder="Number of Dependants"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    min="0"
+                  />
+                </div>
+              </div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.5 }}
-              className="mt-8 bg-yellow-500/10 rounded-lg p-6 border border-yellow-500/20"
-            >
-              {formType === "membership" ? (
-                <>
-                  <h3 className="text-xl font-medium text-yellow-400 mb-3">
-                    Membership Benefits
-                  </h3>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <li className="flex items-start">
-                      <svg
-                        className="h-5 w-5 text-yellow-400 mr-2 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>Exclusive financial services</span>
-                    </li>
-                    <li className="flex items-start">
-                      <svg
-                        className="h-5 w-5 text-yellow-400 mr-2 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>Community networking events</span>
-                    </li>
-                    <li className="flex items-start">
-                      <svg
-                        className="h-5 w-5 text-yellow-400 mr-2 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>Business development resources</span>
-                    </li>
-                    <li className="flex items-start">
-                      <svg
-                        className="h-5 w-5 text-yellow-400 mr-2 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>Educational workshops & training</span>
-                    </li>
-                  </ul>
-                </>
-              ) : (
-                <>
-                  <h3 className="text-xl font-medium text-yellow-400 mb-3">
-                    Loan Benefits
-                  </h3>
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <li className="flex items-start">
-                      <svg
-                        className="h-5 w-5 text-yellow-400 mr-2 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>Competitive interest rates</span>
-                    </li>
-                    <li className="flex items-start">
-                      <svg
-                        className="h-5 w-5 text-yellow-400 mr-2 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>Flexible repayment options</span>
-                    </li>
-                    <li className="flex items-start">
-                      <svg
-                        className="h-5 w-5 text-yellow-400 mr-2 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>Competitive interest rates</span>
-                    </li>
-                    <li className="flex items-start">
-                      <svg
-                        className="h-5 w-5 text-yellow-400 mr-2 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>Flexible repayment options</span>
-                    </li>
-                  </ul>
-                </>
-              )}
-            </motion.div>
+              {/* Business Information Section */}
+              <div className="space-y-4 mt-8">
+                <h2 className="text-2xl font-semibold text-yellow-400 mb-4">
+                  2. Business Information (SME Only)
+                </h2>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="businessName"
+                    value={formState.businessName}
+                    onChange={handleChange}
+                    placeholder="Business Name"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                  <input
+                    type="text"
+                    name="businessAddress"
+                    value={formState.businessAddress}
+                    onChange={handleChange}
+                    placeholder="Business Address"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                  <select
+                    name="businessType"
+                    value={formState.businessType}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  >
+                    <option value="">Business Type</option>
+                    <option value="sole-proprietorship">
+                      Sole Proprietorship
+                    </option>
+                    <option value="partnership">Partnership</option>
+                    <option value="llc">Limited Liability Company</option>
+                  </select>
+                  <input
+                    type="text"
+                    name="businessSector"
+                    value={formState.businessSector}
+                    onChange={handleChange}
+                    placeholder="Business Sector/Industry"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                  <input
+                    type="number"
+                    name="yearsInOperation"
+                    value={formState.yearsInOperation}
+                    onChange={handleChange}
+                    placeholder="Years in Operation"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    min="0"
+                  />
+                  <input
+                    type="number"
+                    name="annualRevenue"
+                    value={formState.annualRevenue}
+                    onChange={handleChange}
+                    placeholder="Annual Revenue"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    min="0"
+                  />
+                  <input
+                    type="number"
+                    name="numberOfEmployees"
+                    value={formState.numberOfEmployees}
+                    onChange={handleChange}
+                    placeholder="Number of Employees"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              {/* Loan Information Section */}
+              <div className="space-y-4 mt-8">
+                <h2 className="text-2xl font-semibold text-yellow-400 mb-4">
+                  3. Loan Information
+                </h2>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <input
+                    type="number"
+                    name="loanAmount"
+                    value={formState.loanAmount}
+                    onChange={handleChange}
+                    placeholder="Loan Amount"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    required
+                    min="0"
+                  />
+                  <select
+                    name="loanPurpose"
+                    value={formState.loanPurpose}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    required
+                  >
+                    <option value="">Loan Purpose</option>
+                    <option value="personal">Personal</option>
+                    <option value="business-expansion">
+                      Business Expansion
+                    </option>
+                    <option value="working-capital">Working Capital</option>
+                  </select>
+                  <div className="flex space-x-2">
+                    <input
+                      type="number"
+                      name="repaymentTerm"
+                      value={formState.repaymentTerm}
+                      onChange={handleChange}
+                      placeholder="Repayment Term"
+                      className="w-2/3 px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                      required
+                    />
+                    <select
+                      name="repaymentTermType"
+                      value={formState.repaymentTermType}
+                      onChange={handleChange}
+                      className="w-1/3 px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                      required
+                    >
+                      <option value="">Term</option>
+                      <option value="months">Months</option>
+                      <option value="years">Years</option>
+                    </select>
+                  </div>
+                  <input
+                    type="text"
+                    name="interestRate"
+                    value={formState.interestRate}
+                    onChange={handleChange}
+                    placeholder="Interest Rate"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                  <input
+                    type="number"
+                    name="processingFees"
+                    value={formState.processingFees}
+                    onChange={handleChange}
+                    placeholder="Processing Fees/Insurance"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                    min="0"
+                  />
+                  <input
+                    type="text"
+                    name="collateral"
+                    value={formState.collateral}
+                    onChange={handleChange}
+                    placeholder="Collateral (if applicable)"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Financial Information Section */}
+              <div className="space-y-4 mt-8">
+                <h2 className="text-2xl font-semibold text-yellow-400 mb-4">
+                  4. Financial Information
+                </h2>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="bankName"
+                    value={formState.bankName}
+                    onChange={handleChange}
+                    placeholder="Bank Name"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                  <input
+                    type="text"
+                    name="accountNumber"
+                    value={formState.accountNumber}
+                    onChange={handleChange}
+                    placeholder="Account Number"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                  <input
+                    type="text"
+                    name="bvn"
+                    value={formState.bvn}
+                    onChange={handleChange}
+                    placeholder="Bank Verification Number (BVN)"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                  <input
+                    type="text"
+                    name="nin"
+                    value={formState.nin}
+                    onChange={handleChange}
+                    placeholder="National Identification Number (NIN)"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                </div>
+              </div>
+
+              {/* References Section */}
+              <div className="space-y-4 mt-8">
+                <h2 className="text-2xl font-semibold text-yellow-400 mb-4">
+                  5. References
+                </h2>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    name="personalReferenceName"
+                    value={formState.personalReferenceName}
+                    onChange={handleChange}
+                    placeholder="Personal Reference Name"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                  <input
+                    type="tel"
+                    name="personalReferencePhone"
+                    value={formState.personalReferencePhone}
+                    onChange={handleChange}
+                    placeholder="Personal Reference Phone"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                  <input
+                    type="text"
+                    name="businessReferenceName"
+                    value={formState.businessReferenceName}
+                    onChange={handleChange}
+                    placeholder="Business Reference Name"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                  <input
+                    type="tel"
+                    name="businessReferencePhone"
+                    value={formState.businessReferencePhone}
+                    onChange={handleChange}
+                    placeholder="Business Reference Phone"
+                    className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Authorization Section */}
+              <div className="space-y-4 mt-8">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="termsAgreement"
+                    checked={formState.termsAgreement}
+                    onChange={handleChange}
+                    className="mr-2"
+                    required
+                  />
+                  I have read and agree to the{" "}
+                  <span
+                    className="text-blue-500 cursor-pointer"
+                    onClick={() => navigate("/terms-of-service")}
+                  >
+                    Terms of Service
+                  </span>
+                </label>
+              </div>
+
+              {/* Submit Button */}
+              <div className="mt-8">
+                <button
+                  type="submit"
+                  className="w-full px-4 py-2 bg-yellow-500 text-black rounded hover:bg-yellow-400 transition"
+                >
+                  {loading ? <span>Processing...</span> : "Submit Application"}
+                </button>
+                <div className="mt-4">
+                  <a
+                    href="/SHAMURR COOPERATIVE SAVINGS AND LOANS - FORM.pdf"
+                    className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-400"
+                    download
+                  >
+                    Download Form (PDF)
+                  </a>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
       </div>
       <Footer />
+
+      {/* Modal for Success Message */}
+      {modalVisible && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 mt-12">
+          <div className="bg-white p-6 rounded shadow-lg relative">
+            <FontAwesomeIcon
+              icon={faTimes}
+              className="absolute top-2 right-2 cursor-pointer text-gray-600 hover:text-gray-800"
+              onClick={handleCloseModal}
+            />
+            <h2 className="md:text-lg text-[1rem] font-bold">
+              Application Submitted!
+            </h2>
+            <p className="text-sm md:text-lg">
+              Your application has been successfully submitted. <br /> We will
+              review your application and get back to you shortly.
+            </p>
+            <p className="text-sm md:text-lg">
+              If you have any questions, feel free to contact us.
+            </p>
+            <div className="flex md:flex-row flex-col md:space-x-4 mt-4 ">
+              <div>
+                <button
+                  onClick={handleReturnHome}
+                  className="mb-2 px-4 py-2 md:w-auto w-full bg-yellow-500 text-black rounded hover:bg-yellow-400"
+                >
+                  Return to Home
+                </button>
+              </div>
+
+              <a
+                href="/SHAMURR COOPERATIVE SAVINGS AND LOANS - FORM.pdf"
+                className="text-center mb-2 md:w-auto w-full px-4 py-2 bg-green-500 text-white rounded hover:bg-green-400"
+                download
+              >
+                Download Form
+              </a>
+            </div>
+            <p className="text-sm text-red-900">
+              <b>NOTE: </b>Download the form as a hard copy, print it, fill it
+              out, and submit it upon request.
+            </p>
+          </div>
+        </div>
+      )}
     </>
   );
 };
